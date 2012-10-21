@@ -1,0 +1,46 @@
+<snippet>
+    <content><![CDATA[
+
+// Inclusão do campo ${1:nome do campo (minusculas)}
+\$args = [
+    "fieldName"         =>  "${1:nome do campo (minusculas)}",
+    "dataName"          =>  "${2:nome Metadado na Base de Dados}",
+    "fieldId"           =>  "${1:nome do campo (minusculas)}",
+    "fieldType"         =>  "${3:text | url}",
+    "fieldClass"        =>  "${4:classe do campo}",
+    "fieldLabel"        =>  "${5:Label}",
+    "fieldRequired"     =>  "${6:true|false}",
+    "fieldPlaceholder"  =>  "${7:Placeholder}",
+    "otherAtts"         =>  "${8:outros atributos (html completo)}",
+    "breakAfterLabel"   =>  "${9:true|false}"
+];
+addField( \$args );
+
+/**
+ * COPY THIS PART OF THE CODE TO THE SAVE_DATA FUNCTION
+ */
+// Store data in post meta table if present in post data
+    if ( isset( \$_POST['${1:nome do campo (minusculas)}'] ) && \$_POST['${1:nome do campo (minusculas)}'] != '' ) {
+
+        update_post_meta( \$post_id, '${2:nome Metadado na Base de Dados}', \$_POST['${1:nome do campo (minusculas)}'] );
+    
+    } elseif ( isset( \$_POST['${1:nome do campo (minusculas)}']) ) {
+    
+        \$old_value = get_post_meta( \$post_id, '${2:nome Metadado na Base de Dados}', true );
+        delete_post_meta( \$post_id, '${2:nome Metadado na Base de Dados}', \$old_value);
+    
+    }
+/*
+ * END OD SAVE_DATA PART CODE
+ */
+
+]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>input text or url</tabTrigger>
+ 
+    <!-- Optional: Description to show in the menu -->
+    <description>LVM: Text or Url field (unique)</description>
+    
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+    <!-- <scope>source.python</scope> -->
+</snippet>

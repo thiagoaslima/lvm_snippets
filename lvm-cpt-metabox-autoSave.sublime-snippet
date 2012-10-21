@@ -1,0 +1,234 @@
+<snippet>
+    <content><![CDATA[
+// GLOSSÁRIO
+// cpt -> custom post type
+
+
+// Cria o espaço de registro do plugin na tabela wp_options
+// Esse resgistro será usado posteriormente pelo sistema para verificar 
+// se houve alteração nas metaboxrs deste cpt 
+register_activation_hook( __FILE__, 'cpt_${1:nomecpt_minusculas}_default_options' );
+
+function cpt_${1:nomecpt_minusculas}_default_options() {
+    if ( get_option( 'cpt_${1:nomecpt_minusculas}_reg' ) === false ) {
+        add_option( 'cpt_${1:nomecpt_minusculas}_reg', "start" );
+    }
+}
+
+
+/****************************************************************************
+ * REGISTER THE CPT
+ ****************************************************************************/
+
+add_action( 'init', 'register_cpt_${1:nomecpt_minusculas}' );
+
+function register_cpt_${1:nomecpt_minusculas}() {
+
+    \$labels = array( 
+        'name'               => _x( '${2:NomeCptPlural}', '${1:nomecpt_minusculas}' ),
+        'singular_name'      => _x( '${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'add_new'            => _x( 'Adicionar Novo ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'add_new_item'       => _x( 'Adicionar Novo ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'edit_item'          => _x( 'Editar ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'new_item'           => _x( 'Novo ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'view_item'          => _x( 'Ver ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'search_items'       => _x( 'Buscar ${2:NomeCptPlural}', '${1:nomecpt_minusculas}' ),
+        'not_found'          => _x( 'Nenhum ${2:NomeCptPlural} encontrado', '${1:nomecpt_minusculas}' ),
+        'not_found_in_trash' => _x( 'Nenhum ${2:NomeCptPlural} encontrado', '${1:nomecpt_minusculas}' ),
+        'parent_item_colon'  => _x( 'Subordinado a ${3:NomeCptSing}:', '${1:nomecpt_minusculas}' ),
+        'menu_name'          => _x( '${2:NomeCptPlural}', '${1:nomecpt_minusculas}' ),
+    );
+
+    \$args = array( 
+        'labels'              => \$labels,
+        'hierarchical'        => true,
+        'description'         => 'description',
+        'taxonomies'          => array( 'category' ),
+        'public'              => true,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'menu_position'       => 5,
+        //'menu_icon'         => '',
+        'show_in_nav_menus'   => true,
+        'publicly_queryable'  => true,
+        'exclude_from_search' => false,
+        'has_archive'         => true,
+        'query_var'           => true,
+        'can_export'          => true,
+        'rewrite'             => true,
+        'capability_type'     => 'post', 
+        'supports'            => array( 'title', 
+                                        'editor', 
+                                        'author', 
+                                        'thumbnail', 
+                                        'custom-fields', 
+                                        'trackbacks', 
+                                        'comments', 
+                                        'revisions', 
+                                        'page-attributes', 
+                                        'post-formats' ),
+    );
+
+    register_post_type( '${1:nomecpt_minusculas}', \$args );
+
+}
+
+
+/****************************************************************************
+ * ADD METABOXES
+ ****************************************************************************/
+
+// Register function to be called when admin interface is visited
+add_action( 'admin_init', 'cpt_${1:nomecpt_minusculas}_admin_interface_init' );
+
+// Function to register new meta box for book review post editor
+function cpt_${1:nomecpt_minusculas}_admin_interface_init() {
+
+    add_meta_box( 
+        'cpt_${1:nomecpt_minusculas}_${5:metabox-title}',         //html id that will be applied to this metabox
+        '${7:${5:metabox-title}}',                                //appears at the top of the new metabox when displayed
+        'cpt_${1:nomecpt_minusculas}_${5:metabox-title}_html_def', //callback >  the function which will load the html into the metabox
+        '${1:nomecpt_minusculas}',                                //name of our custom post type
+        'normal',                                                 //where the box will appear. can be "normal", "advanced" or "side"
+        'high',                                                   //priority within the context where the boxes should show ('high', 'core', 'default' or 'low') );
+        ''                                                        //(optional) Arguments to pass into your callback function. The callback will receive the $post object and whatever parameters are passed through this variable
+    );
+}
+
+// Function to display meta box contents
+function cpt_${1:nomecpt_minusculas}_${5:metabox-title}_html_def( \$post_type ) {
+    
+    // cria os arrays que conterão a relação metadado=>campo do formulário
+    \$unique = array();
+    \$repeat = array();
+    \$groups = array();
+
+    require_once( "lvm_admin_fields.php" );
+
+    /**
+     * ///////////////////////////////////////////
+     * HERE IS THE SPACE TO INCLUDE THE METABOXES
+     * ///////////////////////////////////////////
+     */
+    
+    // Use the fields snippets to add the metaboxes
+    // Sublime text 2 snippets
+
+    /**
+     * ///////////////////////////////////////////
+     * END OF THE SPACE TO INCLUDE THE METABOXES
+     * ///////////////////////////////////////////
+     */
+
+    // calls the function to organize data to save_post
+    synchronize_db( \$unique, \$repeat, \$groups );
+}
+
+function synchronize_db( \$unique, \$repeat, \$groups ){
+
+    \$json_unique = json_encode(\$unique);
+    \$hash_unique = md5( \$json_unique );
+    
+    \$json_repeat = json_encode(\$repeat);
+    \$hash_repeat = md5( \$json_repeat );
+    
+    \$json_groups = json_encode(\$groups);
+    \$hash_groups = md5( \$json_groups );
+
+    \$old_reg = get_option( 'cpt_${1:nomecpt_minusculas}_reg' );
+    \$new_reg = md5(\$json_unique . \$json_repeat . \$json_groups);
+
+    if( \$old_reg !== \$new_reg ){
+        update_option( 'cpt_${1:nomecpt_minusculas}_reg', \$new_reg );
+
+        // confere se existe alguma entrada ou se houve alguma alteração nos unique fields
+        if ( get_option( 'cpt_${1:nomecpt_minusculas}_unique' ) === false ){
+            
+            add_option( 'cpt_${1:nomecpt_minusculas}_unique', \$json_unique );
+            add_option( 'cpt_${1:nomecpt_minusculas}_unique_hash', \$hash_unique );
+        
+        } else {
+
+            if( get_option( 'cpt_${1:nomecpt_minusculas}_unique_hash' ) !== \$hash_unique ) {
+
+                update_option( 'cpt_${1:nomecpt_minusculas}_unique', \$json_unique );
+                update_option( 'cpt_${1:nomecpt_minusculas}_unique_hash', \$hash_unique );
+            }
+        }
+
+        // confere se existe alguma entrada ou se houve alguma alteração nos repeatable fields
+        if ( get_option( 'cpt_${1:nomecpt_minusculas}_repeat' ) === false ){
+            
+            add_option( 'cpt_${1:nomecpt_minusculas}_repeat', \$json_repeat );
+            add_option( 'cpt_${1:nomecpt_minusculas}_repeat_hash', \$hash_repeat );
+        
+        } else {
+
+            if( get_option( 'cpt_${1:nomecpt_minusculas}_repeat_hash' ) !== \$hash_repeat ) {
+
+                update_option( 'cpt_${1:nomecpt_minusculas}_repeat', \$json_repeat );
+                update_option( 'cpt_${1:nomecpt_minusculas}_repeat_hash', \$hash_repeat );
+            }
+        }
+
+        // confere se existe alguma entrada ou se houve alguma alteração nos group fields
+        if ( get_option( 'cpt_${1:nomecpt_minusculas}_groups' ) === false ){
+            
+            add_option( 'cpt_${1:nomecpt_minusculas}_groups', \$json_groups );
+            add_option( 'cpt_${1:nomecpt_minusculas}_groups_hash', \$hash_groups );
+        
+        } else {
+
+            if( get_option( 'cpt_${1:nomecpt_minusculas}_groups_hash' ) !== \$hash_groups ) {
+
+                update_option( 'cpt_${1:nomecpt_minusculas}_groups', \$json_groups );
+                update_option( 'cpt_${1:nomecpt_minusculas}_groups_hash', \$hash_groups );
+            }
+        }
+
+    }
+}
+
+
+// Register function to be called when posts are saved
+// The function will receive 2 arguments
+add_action( 
+        'save_post', 
+        'cpt_${1:nomecpt_minusculas}_save_data', 
+        10, 
+        2 
+);
+
+function cpt_${1:nomecpt_minusculas}_save_data( \$post_id = false, \$post = false ) {
+    
+    // Check post type for book reviews
+    if ( \$post->post_type == '${1:nomecpt_minusculas}' ) {
+        
+        // acessa no banco de dados (tabela options)
+        // o registro de cada um dos campos do formulário 
+        // e o metadado respectivo
+        $unique = json_decode( get_option( 'cpt_${1:nomecpt_minusculas}_unique' ); );
+        $repeat = json_decode( get_option( 'cpt_${1:nomecpt_minusculas}_repeat' ) );
+        $groups = json_decode( get_option( 'cpt_${1:nomecpt_minusculas}_groups' ) );
+
+        // loop sobre os dados de campos únicos (que não podem ocorrer mais de uma vez)
+        // para devida gravação dos dados na tabela postmeta
+        foreach ( $unique as $key => $value) {
+            if ( isset( \$_POST[\$value] ) && \$_POST[\$value] != '' ) {
+                update_post_meta( \$post_id, \$key, \$_POST[\$value] );
+            }
+        }
+        
+    }
+}
+
+
+}]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>cpt with meta boxes</tabTrigger>
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+ 
+     <!-- Optional: Description to show in the menu -->
+    <description>Register CPT + MetaBox Wordpress</description>
+</snippet>
+

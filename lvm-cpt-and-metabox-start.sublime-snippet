@@ -1,0 +1,182 @@
+<snippet>
+    <content><![CDATA[
+// GLOSSÁRIO
+// cpt -> custom post type
+
+
+// Cria o espaço de registro do plugin na tabela wp_options
+register_activation_hook( __FILE__, 'cpt_${1:nomecpt_minusculas}_default_options' );
+
+function cpt_${1:nomecpt_minusculas}_default_options() {
+    
+    /***
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * UPDATE THE VERSION WHEN IMPROVEMENTS ARE MADE
+     * ////////////////////////////////////////////////////////////////
+     **/
+    
+    \$version = 0.1;
+
+    if ( get_option( 'cpt_${1:nomecpt_minusculas}_version' ) === false ) {
+        add_option( 'cpt_${1:nomecpt_minusculas}_version', "0.1" );
+    } else if ( get_option( 'cpt_${1:nomecpt_minusculas}_version' ) < \$version ) {
+        update_option( 'cpt_${1:nomecpt_minusculas}_version', \$version );
+    }
+}
+
+
+/****************************************************************************
+ * REGISTER THE CPT
+ ****************************************************************************/
+
+add_action( 'init', 'register_cpt_${1:nomecpt_minusculas}' );
+
+function register_cpt_${1:nomecpt_minusculas}() {
+
+    \$labels = array( 
+        'name'               => _x( '${2:NomeCptPlural}', '${1:nomecpt_minusculas}' ),
+        'singular_name'      => _x( '${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'add_new'            => _x( 'Adicionar Novo ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'add_new_item'       => _x( 'Adicionar Novo ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'edit_item'          => _x( 'Editar ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'new_item'           => _x( 'Novo ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'view_item'          => _x( 'Ver ${3:NomeCptSing}', '${1:nomecpt_minusculas}' ),
+        'search_items'       => _x( 'Buscar ${2:NomeCptPlural}', '${1:nomecpt_minusculas}' ),
+        'not_found'          => _x( 'Nenhum ${2:NomeCptPlural} encontrado', '${1:nomecpt_minusculas}' ),
+        'not_found_in_trash' => _x( 'Nenhum ${2:NomeCptPlural} encontrado', '${1:nomecpt_minusculas}' ),
+        'parent_item_colon'  => _x( 'Subordinado a ${3:NomeCptSing}:', '${1:nomecpt_minusculas}' ),
+        'menu_name'          => _x( '${2:NomeCptPlural}', '${1:nomecpt_minusculas}' ),
+    );
+
+    \$args = array( 
+        'labels'              => \$labels,
+        'hierarchical'        => true,
+        'description'         => 'description',
+        'taxonomies'          => array( 'category' ),
+        'public'              => true,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'menu_position'       => 5,
+        //'menu_icon'         => '',
+        'show_in_nav_menus'   => true,
+        'publicly_queryable'  => true,
+        'exclude_from_search' => false,
+        'has_archive'         => true,
+        'query_var'           => true,
+        'can_export'          => true,
+        'rewrite'             => true,
+        'capability_type'     => 'post', 
+        'supports'            => array( 'title', 
+                                        'editor', 
+                                        'author', 
+                                        'thumbnail', 
+                                        'custom-fields', 
+                                        'trackbacks', 
+                                        'comments', 
+                                        'revisions', 
+                                        'page-attributes', 
+                                        'post-formats' ),
+    );
+
+    register_post_type( '${1:nomecpt_minusculas}', \$args );
+
+}
+
+
+/****************************************************************************
+ * ADD METABOXES
+ ****************************************************************************/
+
+// Register function to be called when admin interface is visited
+add_action( 'admin_init', 'cpt_${1:nomecpt_minusculas}_admin_interface_init' );
+
+// Function to register new ${7:${5:metabox-title}} meta box for book review post editor
+function cpt_${1:nomecpt_minusculas}_admin_interface_init() {
+
+    add_meta_box( 
+        'cpt_${1:nomecpt_minusculas}_${5:metabox-title}',               //html id that will be applied to this metabox
+        '${7:${5:metabox-title}}',                                      //appears at the top of the new metabox when displayed
+        'cpt_${1:nomecpt_minusculas}_${5:metabox-title}_html_def',      //callback >  the function which will load the html into the metabox
+        '${1:nomecpt_minusculas}',                                      //name of our custom post type
+        'normal',                                                       //where the box will appear. can be "normal", "advanced" or "side"
+        'high',                                                         //priority within the context where the boxes should show ('high', 'core', 'default' or 'low') );
+        ''                                                              //(optional) Arguments to pass into your callback function. The callback will receive the $post object and whatever parameters are passed through this variable
+    );
+
+}
+
+
+// Function to display ${7:${5:metabox-title}} meta box contents
+function cpt_${1:nomecpt_minusculas}_${5:metabox-title}_html_def( \$post_type ) {
+    
+    require_once( "lvm_admin_fields.php" );
+
+    /**
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * HERE IS THE SPACE TO INCLUDE THE METABOXES
+     * ///////////////////////////////////////////
+     */
+    
+    // Use the fields snippets to add the metaboxes
+    // Sublime text 2 snippets
+
+
+
+
+
+
+    /**
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * END OF THE SPACE TO INCLUDE THE METABOXES
+     * ///////////////////////////////////////////
+     */
+}
+
+// Register function to be called when posts are saved
+// The function will receive 2 arguments
+add_action( 
+        'save_post', 
+        'cpt_${1:nomecpt_minusculas}_save_data', 
+        10, 
+        2 
+);
+
+
+
+// >>> ENTER NEW METABOXES HERE! <<<<<<<<<<< <<<<<<<<<<<<<
+
+
+function cpt_${1:nomecpt_minusculas}_save_data( \$post_id = false, \$post = false ) {
+    
+    // Check post type for book reviews
+    if ( \$post->post_type == '${1:nomecpt_minusculas}' ) {
+        
+    /**
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * PASTE HERE THE SAVE_DATA_CODE GENERATED WITH THE METABOX INSTANCE
+     * /////////////////////////////////////////////////////////////////
+     */
+    
+
+
+
+
+    /**
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * END OF PASTE AREA
+     * /////////////////////////////////////////////////////////////////
+     */
+        
+    }
+}
+
+
+}]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>cpt + metaboxes space</tabTrigger>
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+ 
+     <!-- Optional: Description to show in the menu -->
+    <description>LVM: Register CPT + MetaBox</description>
+</snippet>
+

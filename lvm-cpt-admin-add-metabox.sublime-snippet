@@ -1,0 +1,56 @@
+<snippet>
+    <content><![CDATA[
+
+// Register function to be called when admin interface is visited
+add_action( 'admin_init', 'cpt_${1:nomecpt_minusculas}_admin_interface_init' );
+
+// Function to register new ${3:${2:metabox-title}} meta box for book review post editor
+function cpt_${1:nomecpt_minusculas}_admin_interface_init() {
+
+    add_meta_box( 
+        'cpt_${1:nomecpt_minusculas}_${2:metabox-title}',               //html id that will be applied to this metabox
+        '${3:${2:metabox-title}}',                                      //appears at the top of the new metabox when displayed
+        'cpt_${1:nomecpt_minusculas}_${2:metabox-title}_html_def',      //callback >  the function which will load the html into the metabox
+        '${1:nomecpt_minusculas}',                                      //name of our custom post type
+        'normal',                                                       //where the box will appear. can be "normal", "advanced" or "side"
+        'high',                                                         //priority within the context where the boxes should show ('high', 'core', 'default' or 'low') );
+        ''                                                              //(optional) Arguments to pass into your callback function. The callback will receive the $post object and whatever parameters are passed through this variable
+    );
+
+// Function to display ${3:${2:metabox-title}} meta box contents
+function cpt_${1:nomecpt_minusculas}_${2:metabox-title}_html_def( \$post_type ) {
+    
+    require_once( "inc/lvm_admin_fields.php" );
+
+    /**
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * HERE IS THE SPACE TO INCLUDE THE METABOXES
+     * ///////////////////////////////////////////
+     */
+    
+    // Use the fields snippets to add the metaboxes
+    // Sublime text 2 LVM snippets
+
+
+
+
+
+
+    /**
+     * \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+     * END OF THE SPACE TO INCLUDE THE METABOXES
+     * /////////////////////////////////////////
+     */
+
+}
+
+]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>new metabox in cpt function</tabTrigger>
+ 
+    <!-- Optional: Description to show in the menu -->
+    <description>LVM: Add metabox</description>
+    
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+    <!-- <scope>source.python</scope> -->
+</snippet>
